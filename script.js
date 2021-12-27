@@ -37,17 +37,12 @@ class Game{
         })
         return emptyCells;
     }
-    setGameLevel(level = false){
+    setGameLevel(level = "Medium"){
         let levelIndicator = document.getElementById("gameLevelIndicator")
         let emptyCells = this.getEmptyCells();
         if(emptyCells.length === 9){
-            if(!level){
-                levelIndicator.textContent = "Medium"
-                this.level = "Medium"
-            }else{
-                levelIndicator.textContent = level;
-                this.level = level
-            }
+            levelIndicator.textContent = level;
+            this.level = level
         }
     }
     checkForWinner(){
@@ -156,7 +151,7 @@ class Game{
         if(el.textContent || this.gameEnded){
             return;
         }
-        if(this.currentPlayer === "X" || this.level === "Play against a friend"){
+        if(this.currentPlayer === "X" || this.level === "Two Players"){
             el.textContent = this.currentPlayer;
             if(el.textContent === "O"){
                 el.classList.add("text-light2")
@@ -166,7 +161,7 @@ class Game{
             this.switchCurrentPlayer()
             this.setActiveTab()
         }
-        if( this.level !== "Play against a friend" && this.currentPlayer === "O"){
+        if( this.level !== "Two Players" && this.currentPlayer === "O"){
             this.computer()
         }
         document.getElementById("gameLevelIndicator").disabled = true;
@@ -185,6 +180,8 @@ class Game{
                 this.medium()
             }else if(this.level === "Hard"){
                 this.hard()
+            }else if(this.level === "Impossible"){
+                this.impossible()
             }
             this.checkForWinner()
             this.checkForDraw()
@@ -195,30 +192,33 @@ class Game{
     easy(){
         this.playRandomBox()
     }
-    playRandomBox(){
-        let emptyCells = this.getEmptyCells()
-        let randomCellPosition = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-        this.allBoxes[randomCellPosition].textContent = "O";
-        this.allBoxes[randomCellPosition].classList.add("text-light2");
-    }
-    playTo(goal, playedTurn){
-        //for (let i = 0; i < this.winningCombinations.length; i++) {
-            if(this.playerAboutToWin().player === (goal === "win" ? "O" : "X")){
-                console.log(`player ${this.playerAboutToWin().player} is about to win`)
-                this.winningCombinations[this.playerAboutToWin().index].forEach(position =>{
-                    if(!this.allBoxes[position].textContent){
-                        this.allBoxes[position].textContent = "O"
-                        this.allBoxes[position].classList.add("text-light2");
-                    }
-                })
-                playedTurn.value = true
-                //break;
-            }            
-        //}
-    }
     medium(){
         let playedTurn = {value: false};
+        
+        if(!playedTurn.value){
+            this.playTo("win", playedTurn)
+        }
+        if(!playedTurn.value){
+            this.playTo("defend", playedTurn)
+        }
+        if(!playedTurn.value){
+            this.playRandomBox();
+        }
+    }
+    hard(){
+        let playedTurn = {value: false};
+        let corners = [0, 2, 6, 8]
 
+        if(this.getEmptyCells().length === 8 && this.allBoxes[4].textContent){
+            let randomCornerPosition = corners[Math.floor(Math.random() * corners.length)];
+            this.allBoxes[randomCornerPosition].textContent = "O"
+            this.allBoxes[randomCornerPosition].classList.add("text-light2");
+            playedTurn.value = true
+        }else if(this.getEmptyCells().length === 8 && !this.allBoxes[4].textContent){
+            this.allBoxes[4].textContent = "O"
+            this.allBoxes[4].classList.add("text-light2");
+            playedTurn.value = true
+        }
         if(!playedTurn.value){
             this.playTo("win", playedTurn)
         }
@@ -230,7 +230,7 @@ class Game{
         }
     }
 
-    hard(){
+    impossible(){
         let playedTurn = {value: false};
         let dangerousCells = [1, 3, 5, 7]
         let dangerousCombinations = [[1, 3], [3, 7], [7, 5], [5, 1]] ;
@@ -281,7 +281,6 @@ class Game{
             }
         }
 
-
         if(!playedTurn.value){
             this.playTo("win", playedTurn)
         }
@@ -290,6 +289,24 @@ class Game{
         }
         if(!playedTurn.value){
             this.playRandomBox();
+        }
+    }
+    playRandomBox(){
+        let emptyCells = this.getEmptyCells()
+        let randomCellPosition = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        this.allBoxes[randomCellPosition].textContent = "O";
+        this.allBoxes[randomCellPosition].classList.add("text-light2");
+    }
+    playTo(goal, playedTurn) {
+        if (this.playerAboutToWin().player === (goal === "win" ? "O" : "X")) {
+            //console.log(`player ${this.playerAboutToWin().player} is about to win`)
+            this.winningCombinations[this.playerAboutToWin().index].forEach(position => {
+                if (!this.allBoxes[position].textContent) {
+                    this.allBoxes[position].textContent = "O"
+                    this.allBoxes[position].classList.add("text-light2");
+                }
+            })
+            playedTurn.value = true
         }
     }
     playerAboutToWin(){
@@ -324,13 +341,11 @@ class Game{
                     break;
                 }
             }
-            
             Xcount = 0;
             Ocount = 0;
         }
-        console.log(playerAboutToWinDetails)
+        //console.log(playerAboutToWinDetails)
         return playerAboutToWinDetails
-        
     }
 }
 
