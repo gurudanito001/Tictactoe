@@ -12,6 +12,7 @@ class Game{
     playingAreas = Array.from(document.getElementsByClassName("playing-area"));
 
     start(){
+        alert("Starting")
         this.addEventListenerToBoxes();
         document.getElementById("restart-btn").addEventListener("click", ()=>this.restart());
         this.setGameLevel();
