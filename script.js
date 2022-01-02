@@ -12,7 +12,6 @@ class Game{
     playingAreas = Array.from(document.getElementsByClassName("playing-area"));
 
     start(){
-        alert("Starting")
         this.addEventListenerToBoxes();
         document.getElementById("restart-btn").addEventListener("click", ()=>this.restart());
         this.setGameLevel();
@@ -264,10 +263,16 @@ class Game{
             if(!playedTurn.value && this.allBoxes[4].textContent === "O"){
                 for (let i = 0; i < dangerousCells.length; i++) {
                     if(!this.allBoxes[dangerousCells[i]].textContent){
-                        this.allBoxes[dangerousCells[i]].textContent = "O";
-                        this.allBoxes[dangerousCells[i]].classList.add("text-light2");
-                        playedTurn.value = true
-                        break;
+                        console.log('this is the case handled')
+                        if(dangerousCells[i] === 1 && this.allBoxes[7].textContent){
+                            console.log('this condition is true')
+                            continue;
+                        }else{
+                            this.allBoxes[dangerousCells[i]].textContent = "O";
+                            this.allBoxes[dangerousCells[i]].classList.add("text-light2");
+                            playedTurn.value = true
+                            break;
+                        }
                     }
                 }
             }else if(!playedTurn.value && this.allBoxes[4].textContent !== "O"){
