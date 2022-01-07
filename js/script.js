@@ -13,6 +13,7 @@ class Game{
 
     start(){
         this.addEventListenerToBoxes();
+        document.getElementById("clearScores").addEventListener("click", ()=>this.clearScores())
         document.getElementById("restart-btn").addEventListener("click", ()=>this.restart());
         this.setGameLevel();
     }
@@ -26,7 +27,12 @@ class Game{
             area.classList.remove("d-none")
         })
         this.playingAreas[1].classList.add("d-none")
-        document.getElementById("gameLevelIndicator").disabled = false;
+        //document.getElementById("gameLevelIndicator").disabled = false;
+    }
+    clearScores(){
+        this.scores = {x:0, o:0};
+        this.playerTabs[0].getElementsByTagName("div")[1].textContent = this.scores.x
+        this.playerTabs[1].getElementsByTagName("div")[1].textContent = this.scores.o
     }
     getEmptyCells(){
         let emptyCells = []
@@ -39,11 +45,12 @@ class Game{
     }
     setGameLevel(level = "Medium"){
         let levelIndicator = document.getElementById("gameLevelIndicator")
-        let emptyCells = this.getEmptyCells();
-        if(emptyCells.length === 9){
+        //let emptyCells = this.getEmptyCells();
+        //if(emptyCells.length === 9){
             levelIndicator.textContent = level;
             this.level = level
-        }
+            this.restart()
+        //}
     }
     checkForWinner(){
         let winnerDeclared = false;
@@ -164,7 +171,7 @@ class Game{
         if( this.level !== "Two Players" && this.currentPlayer === "O"){
             this.computer()
         }
-        document.getElementById("gameLevelIndicator").disabled = true;
+        //document.getElementById("gameLevelIndicator").disabled = true;
     }
     addEventListenerToBoxes() {
         this.allBoxes.forEach(element => {
