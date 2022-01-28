@@ -10,6 +10,14 @@ class Game{
     allBoxes = Array.from(document.getElementsByClassName('boxes'));
     playerTabs = Array.from(document.getElementsByClassName("player-tab"));
     playingAreas = Array.from(document.getElementsByClassName("playing-area"));
+    playerCountDown; 
+    winningCombinationIndicator = document.getElementById("winningCombinationIndicator");
+    winningCombinationIndex; //To know which of the combinations the player won in
+    winningCombinationIndicatorClasses = [
+        'winningCombination0', 'winningCombination1', 'winningCombination2', 'winningCombination3', 'winningCombination4', 'winningCombination5', 'winningCombination6', 'winningCombination7', 'playerOIndicator', 'playerXIndicator'
+    ]
+
+    
 
     start(){
         this.addEventListenerToBoxes();
@@ -26,8 +34,10 @@ class Game{
         this.playingAreas.forEach( area =>{
             area.classList.remove("d-none")
         })
-        this.playingAreas[1].classList.add("d-none")
-        //document.getElementById("gameLevelIndicator").disabled = false;
+        this.playingAreas[1].classList.add("d-none");
+        this.removeCountdown();
+        this.removeCombinationIndicator()
+        this.winningCombinationIndicator.classList.add('d-none')
     }
     clearScores(){
         this.scores = {x:0, o:0};
@@ -45,27 +55,26 @@ class Game{
     }
     setGameLevel(level = "Medium"){
         let levelIndicator = document.getElementById("gameLevelIndicator")
-        //let emptyCells = this.getEmptyCells();
-        //if(emptyCells.length === 9){
-            levelIndicator.textContent = level;
-            this.level = level
-            this.restart()
-        //}
+        levelIndicator.textContent = level;
+        this.level = level
+        this.restart()
     }
     checkForWinner(){
         let winnerDeclared = false;
-        this.winningCombinations.forEach( member =>{
-            if(this.allBoxes[member[0]].textContent === this.currentPlayer && 
-                this.allBoxes[member[1]].textContent === this.currentPlayer && 
-                this.allBoxes[member[2]].textContent === this.currentPlayer)
+        this.winningCombinations.forEach( (combination, index) =>{
+            if(this.allBoxes[combination[0]].textContent === this.currentPlayer && 
+                this.allBoxes[combination[1]].textContent === this.currentPlayer && 
+                this.allBoxes[combination[2]].textContent === this.currentPlayer)
             {
                 this.endGame()
+                this.winningCombinationIndex = index
+                this.setCombinationIndicator()
                 setTimeout(() => {
                     if(!winnerDeclared){
                         this.declareWinner()
                         winnerDeclared = true;
                     }
-                }, 1000);
+                }, 1500);
             }
         })
     }
@@ -84,6 +93,19 @@ class Game{
         this.playingAreas[0].classList.add("d-none");
         this.setScore(this.currentPlayer)
     }
+    setCombinationIndicator(){
+        this.winningCombinationIndicator.classList.remove('d-none')
+        console.log(this.winningCombinationIndex)
+        this.winningCombinationIndicator.classList.add(`winningCombination${this.winningCombinationIndex}`)
+        this.winningCombinationIndicator.classList.add(`player${this.currentPlayer}Indicator`)
+        console.log(this.winningCombinationIndicator)
+    }
+    removeCombinationIndicator(){
+        this.winningCombinationIndicatorClasses.forEach( classname =>{
+            this.winningCombinationIndicator.classList.remove(classname)
+        })
+        this.winningCombinationIndicator.classList.add('d-none');
+    }
     setScore(winner){
         if(winner === "X"){
             this.scores.x++;
@@ -93,9 +115,10 @@ class Game{
             this.playerTabs[1].getElementsByTagName("div")[1].textContent = this.scores.o
         }
     }
-    endGame(){
+    endGame(message = "Game Over"){
         this.gameEnded = true;
-        document.getElementById("player-turn-container").innerHTML = "Game Over"
+        document.getElementById("player-turn-container").innerHTML = message
+        this.removeCountdown()
     }
     clearAllBoxes(){
         this.allBoxes.forEach( element =>{
@@ -121,6 +144,32 @@ class Game{
         if(!this.gameEnded){
             this.currentPlayer = this.currentPlayer === "X" ? "O" : "X"
         }
+        if(this.currentPlayer === "X"){
+            this.setCountdown()
+        }
+    }
+    setCountdown(){
+        let count = 5;
+        let countDownDiv = document.getElementById("countdownDiv");
+        let countDown = document.getElementById("countdown");
+        countDownDiv.classList.remove("d-none");
+        this.playerCountDown = setInterval(() => {
+            countDown.textContent = --count;
+            //count--
+            if(count < 0){
+                clearInterval(this.playerCountDown);
+                this.switchCurrentPlayer()
+                this.endGame("Your time has run out 😬");
+                this.declareWinner();
+            }
+        }, 1000);
+    }
+    removeCountdown(){
+        let countDownDiv = document.getElementById("countdownDiv");
+        let countDown = document.getElementById("countdown");
+        countDown.textContent = "5"
+        countDownDiv.classList.add("d-none");
+        clearInterval(this.playerCountDown);
     }
     checkForDraw(){
         let count = 0;
@@ -131,7 +180,6 @@ class Game{
             }
         })
         if(count === 9 && !this.gameEnded){
-            
             this.endGame();
             setTimeout(() => {
                 if(!drawDeclared){
@@ -167,11 +215,11 @@ class Game{
             this.checkForDraw()
             this.switchCurrentPlayer()
             this.setActiveTab()
+            this.removeCountdown()
         }
         if( this.level !== "Two Players" && this.currentPlayer === "O"){
             this.computer()
         }
-        //document.getElementById("gameLevelIndicator").disabled = true;
     }
     addEventListenerToBoxes() {
         this.allBoxes.forEach(element => {

@@ -88,13 +88,57 @@
 .game-levels{
     cursor: pointer;
 }
-
 .game-levels:hover{
     background-color: rgb(235, 235, 235);
 }
-
 .timerSpinner {
     color: #14BDAC;
     height: 3rem;
     width: 3rem;
+}
+#winningCombinationIndicator {
+    position: relative; 
+    align-self: center;  
+    width: 210px; 
+    height: 5px;
+}
+.winningCombination0 {
+    bottom: 166px;
+}
+.winningCombination1 {
+    bottom: 100px;
+}
+.winningCombination2 {
+    bottom: 33px;
+}
+.winningCombination3 {
+    transform: rotate(90deg);  
+    bottom: 100px; 
+    left: -66px;
+}
+.winningCombination4 {
+    transform: rotate(90deg);  
+    bottom: 100px; 
+    left: 0px;
+}
+.winningCombination5 {
+    transform: rotate(90deg);  
+    bottom: 100px; 
+    left: 66px;
+}
+.winningCombination6 {
+    transform: rotate(45deg);  
+    bottom: 100px; 
+    left: 0px;
+}
+.winningCombination7 {
+    transform: rotate(135deg);  
+    bottom: 100px; 
+    left: 0px;
+}
+.playerXIndicator {
+    background: rgb(78, 78, 78)
+}
+.playerOIndicator {
+    background: antiquewhite;
 }
