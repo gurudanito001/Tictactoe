@@ -1,5 +1,6 @@
 class Game{
     currentPlayer = "X"
+    previousStarter = "O";
     scores = {
         x: 0,
         o: 0
@@ -27,8 +28,14 @@ class Game{
     }
     restart(){
         this.gameEnded = false;
-        document.getElementById("player-turn-container").innerHTML = "<span id='player-turn'>X</span> <span class='text-secondary'>Turn</span>"
-        this.currentPlayer = "X";
+        this.currentPlayer = this.previousStarter === "X" ? "O" : "X";
+        this.previousStarter = this.currentPlayer;
+        console.log(this.currentPlayer);
+        this.setActiveTab()
+        if(this.currentPlayer === "O"){
+            this.handleClick();
+        }
+        /* document.getElementById("player-turn-container").innerHTML = `<span id='player-turn'>${this.currentPlayer}</span> <span class='text-secondary'>Turn</span>` */
         this.clearAllBoxes();
         this.setActiveTab(true);
         this.playingAreas.forEach( area =>{
@@ -53,7 +60,7 @@ class Game{
         })
         return emptyCells;
     }
-    setGameLevel(level = "Medium"){
+    setGameLevel(level = "intermediate"){
         let levelIndicator = document.getElementById("gameLevelIndicator")
         levelIndicator.textContent = level;
         this.level = level
@@ -131,12 +138,12 @@ class Game{
             this.playerTabs.forEach( tab =>{
                 tab.classList.remove("player-tab-active");
             })
-            if(restart || this.currentPlayer === "X"){
+            if(/* restart || */ this.currentPlayer === "X"){
                 this.playerTabs[0].classList.add("player-tab-active")
-                document.getElementById("player-turn").textContent = "X"
+                document.getElementById("player-turn-container").innerHTML = `<span id='player-turn'>${this.currentPlayer}</span> <span class='text-secondary'>Turn</span>`
             }else{
                 this.playerTabs[1].classList.add("player-tab-active")
-                document.getElementById("player-turn").textContent = "O"
+                document.getElementById("player-turn-container").innerHTML = `<span id='player-turn'>${this.currentPlayer}</span> <span class='text-secondary'>Turn</span>`
             }
         }        
     }
@@ -149,9 +156,17 @@ class Game{
         }
     }
     setCountdown(){
-        let count = 5;
+        let count;
+        if(this.level === "beginner"){
+            count = 10
+        }else if(this.level === "intermediate"){
+            count = 7
+        }else{
+            count = 5
+        }
         let countDownDiv = document.getElementById("countdownDiv");
         let countDown = document.getElementById("countdown");
+        countDown.textContent = count;
         countDownDiv.classList.remove("d-none");
         this.playerCountDown = setInterval(() => {
             countDown.textContent = --count;
@@ -202,11 +217,10 @@ class Game{
         `
         this.playingAreas[0].classList.add("d-none");
     }
-    handleClick(el){
-        if(el.textContent || this.gameEnded){
+    handleClick(el = false){
+        if(el?.textContent || this.gameEnded){
             return;
-        }
-        if(this.currentPlayer === "X" || this.level === "Two Players"){
+        }else if(this.currentPlayer === "X" || this.level === "two players"){
             el.textContent = this.currentPlayer;
             if(el.textContent === "O"){
                 el.classList.add("text-light2")
@@ -217,7 +231,7 @@ class Game{
             this.setActiveTab()
             this.removeCountdown()
         }
-        if( this.level !== "Two Players" && this.currentPlayer === "O"){
+        if(this.level !== "two players" && this.currentPlayer === "O"){
             this.computer()
         }
     }
@@ -229,14 +243,12 @@ class Game{
 
     computer(){
         setTimeout(() => {
-            if(this.level === "Easy"){
-                this.easy()
-            }else if(this.level === "Medium"){
-                this.medium()
-            }else if(this.level === "Hard"){
-                this.hard()
-            }else if(this.level === "Impossible"){
-                this.impossible()
+            if(this.level === "beginner"){
+                this.beginner()
+            }else if(this.level === "intermediate"){
+                this.intermediate()
+            }else if(this.level === "professional"){
+                this.professional()
             }
             this.checkForWinner()
             this.checkForDraw()
@@ -244,10 +256,10 @@ class Game{
             this.setActiveTab()
         }, 500);
     }
-    easy(){
+    beginner(){
         this.playRandomBox()
     }
-    medium(){
+    /* medium(){
         let playedTurn = {value: false};
         
         if(!playedTurn.value){
@@ -259,8 +271,8 @@ class Game{
         if(!playedTurn.value){
             this.playRandomBox();
         }
-    }
-    hard(){
+    } */
+    intermediate(){
         let playedTurn = {value: false};
         let corners = [0, 2, 6, 8]
 
@@ -285,7 +297,7 @@ class Game{
         }
     }
 
-    impossible(){
+    professional(){
         let playedTurn = {value: false};
         let dangerousCells = [1, 3, 5, 7]
         let dangerousCombinations = [[1, 3], [3, 7], [7, 5], [5, 1]] ;

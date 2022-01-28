@@ -23,13 +23,12 @@
                             aria-expanded="false">
                             -
                         </button>
-                        <ul class="dropdown-menu" aria-labelledby="gameLevelIndicator">
-                            <li onclick="TicTacToe.setGameLevel('Easy')" class="game-levels px-3 d-block text-start py-1">Easy</li>
-                            <li onclick="TicTacToe.setGameLevel('Medium')" class="game-levels px-3 d-block text-start py-1">Medium</li>
-                            <li onclick="TicTacToe.setGameLevel('Hard')" class="game-levels px-3 d-block text-start py-1">Hard</li>
-                            <li onclick="TicTacToe.setGameLevel('Impossible')" class="game-levels px-3 d-block text-start py-1">Impossible</li>
+                        <ul class="dropdown-menu" style="text-transform: capitalize;" aria-labelledby="gameLevelIndicator">
+                            <li onclick="TicTacToe.setGameLevel('beginner')" class="game-levels px-3 d-block text-start py-1">Beginner</li>
+                            <li onclick="TicTacToe.setGameLevel('intermediate')" class="game-levels px-3 d-block text-start py-1">Intermediate</li>
+                            <li onclick="TicTacToe.setGameLevel('professional')" class="game-levels px-3 d-block text-start py-1">Professional</li>
                             <hr class="my-1"/>
-                            <li onclick="TicTacToe.setGameLevel('Two Players')" class="game-levels px-3 d-block text-start py-1">Two Players</li>
+                            <li onclick="TicTacToe.setGameLevel('two players')" class="game-levels px-3 d-block text-start py-1">Two Players</li>
                         </ul>
                     </div>
                     <div id="countdownDiv" class="col-4 d-flex align-items-center justify-content-center d-none">

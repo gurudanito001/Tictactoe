@@ -85,6 +85,9 @@
     font-weight: 600;
     color: rgb(78, 78, 78)
 }
+#gameLevelIndicator{
+    text-transform: capitalize;
+}
 .game-levels{
     cursor: pointer;
 }
