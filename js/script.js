@@ -11,6 +11,8 @@ class Game{
     allBoxes = Array.from(document.getElementsByClassName('boxes'));
     playerTabs = Array.from(document.getElementsByClassName("player-tab"));
     playingAreas = Array.from(document.getElementsByClassName("playing-area"));
+    restartBtn = document.getElementById("restart-btn");
+    levelBtn = document.getElementById("gameLevelIndicator");
     playerCountDown; 
     winningCombinationIndicator = document.getElementById("winningCombinationIndicator");
     winningCombinationIndex; //To know which of the combinations the player won in
@@ -18,12 +20,10 @@ class Game{
         'winningCombination0', 'winningCombination1', 'winningCombination2', 'winningCombination3', 'winningCombination4', 'winningCombination5', 'winningCombination6', 'winningCombination7', 'playerOIndicator', 'playerXIndicator'
     ]
 
-    
-
     start(){
         this.addEventListenerToBoxes();
         document.getElementById("clearScores").addEventListener("click", ()=>this.clearScores())
-        document.getElementById("restart-btn").addEventListener("click", ()=>this.restart());
+        this.restartBtn.addEventListener("click", ()=>this.restart());
         this.setGameLevel();
     }
     restart(){
@@ -61,8 +61,7 @@ class Game{
         return emptyCells;
     }
     setGameLevel(level = "intermediate"){
-        let levelIndicator = document.getElementById("gameLevelIndicator")
-        levelIndicator.textContent = level;
+        this.levelBtn.textContent = level;
         this.level = level
         this.restart()
     }
@@ -74,12 +73,16 @@ class Game{
                 this.allBoxes[combination[2]].textContent === this.currentPlayer)
             {
                 this.endGame()
+                this.restartBtn.disabled = true
+                this.levelBtn.disabled = true
                 this.winningCombinationIndex = index
                 this.setCombinationIndicator()
                 setTimeout(() => {
                     if(!winnerDeclared){
                         this.declareWinner()
                         winnerDeclared = true;
+                        this.restartBtn.disabled = false
+                        this.levelBtn.disabled = false
                     }
                 }, 1500);
             }
@@ -196,10 +199,14 @@ class Game{
         })
         if(count === 9 && !this.gameEnded){
             this.endGame();
+            this.restartBtn.disabled = true
+            this.levelBtn.disabled = true
             setTimeout(() => {
                 if(!drawDeclared){
                     this.declareDraw();
                     drawDeclared = true;
+                    this.restartBtn.disabled = false
+                    this.levelBtn.disabled = false
                 }
             }, 1000);
         }
