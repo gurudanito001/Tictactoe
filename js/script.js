@@ -72,7 +72,9 @@ class Game{
                 this.allBoxes[combination[1]].textContent === this.currentPlayer && 
                 this.allBoxes[combination[2]].textContent === this.currentPlayer)
             {
-                this.endGame()
+                this.endGame(
+                    this.currentPlayer === "X" ? "You Win" : "Computer Wins"
+                )
                 this.restartBtn.disabled = true
                 this.levelBtn.disabled = true
                 this.winningCombinationIndex = index
