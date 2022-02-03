@@ -35,7 +35,6 @@ class Game{
         if(this.currentPlayer === "O"){
             this.handleClick();
         }
-        /* document.getElementById("player-turn-container").innerHTML = `<span id='player-turn'>${this.currentPlayer}</span> <span class='text-secondary'>Turn</span>` */
         this.clearAllBoxes();
         this.setActiveTab(true);
         this.playingAreas.forEach( area =>{
@@ -143,12 +142,12 @@ class Game{
             this.playerTabs.forEach( tab =>{
                 tab.classList.remove("player-tab-active");
             })
-            if(/* restart || */ this.currentPlayer === "X"){
+            if(this.currentPlayer === "X"){
                 this.playerTabs[0].classList.add("player-tab-active")
-                document.getElementById("player-turn-container").innerHTML = `<span id='player-turn'>${this.currentPlayer}</span> <span class='text-secondary'>Turn</span>`
+                document.getElementById("player-turn-container").innerHTML = `<span id='player-turn'>${this.currentPlayer === "X" ? "Your" : "Computer"}</span> <span class='text-secondary'>Turn</span>`
             }else{
                 this.playerTabs[1].classList.add("player-tab-active")
-                document.getElementById("player-turn-container").innerHTML = `<span id='player-turn'>${this.currentPlayer}</span> <span class='text-secondary'>Turn</span>`
+                document.getElementById("player-turn-container").innerHTML = `<span id='player-turn'>${this.currentPlayer === "X" ? "Your" : "Computer"}</span> <span class='text-secondary'>Turn</span>`
             }
         }        
     }
@@ -268,19 +267,6 @@ class Game{
     beginner(){
         this.playRandomBox()
     }
-    /* medium(){
-        let playedTurn = {value: false};
-        
-        if(!playedTurn.value){
-            this.playTo("win", playedTurn)
-        }
-        if(!playedTurn.value){
-            this.playTo("defend", playedTurn)
-        }
-        if(!playedTurn.value){
-            this.playRandomBox();
-        }
-    } */
     intermediate(){
         let playedTurn = {value: false};
         let corners = [0, 2, 6, 8]
@@ -381,7 +367,6 @@ class Game{
     }
     playTo(goal, playedTurn) {
         if (this.playerAboutToWin().player === (goal === "win" ? "O" : "X")) {
-            //console.log(`player ${this.playerAboutToWin().player} is about to win`)
             this.winningCombinations[this.playerAboutToWin().index].forEach(position => {
                 if (!this.allBoxes[position].textContent) {
                     this.allBoxes[position].textContent = "O"
@@ -426,7 +411,6 @@ class Game{
             Xcount = 0;
             Ocount = 0;
         }
-        //console.log(playerAboutToWinDetails)
         return playerAboutToWinDetails
     }
 }
