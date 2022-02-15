@@ -1,3 +1,50 @@
+const twoWaySystemCombinations = [
+    [0,6,8,3,7],
+    [3,6,7,0,8],
+    [0,6,7,3,8],
+    [3,6,8,0,7],
+    [0,2,8,1,5],
+    [1,2,5,0,8],
+    [1,2,8,0,5],
+    [0,2,5,1,8],
+    [2,0,6,1,3],
+    [1,0,6,2,3],
+    [1,0,3,2,6],
+    [2,0,3,1,6],
+    [2,8,6,5,7],
+    [2,8,7,5,6],
+    [5,8,7,2,6],
+    [5,8,6,2,7],
+    [4,6,8,0,2],
+    [4,6,8,2,7],
+    [4,6,8,0,7], 
+    [2,4,5,3,8],
+    [2,4,5,6,8],
+    [2,4,5,3,6],
+    [1,4,5,3,7],
+    [4,5,7,3,7],
+    [4,5,8,2,3],
+    [4,5,8,0,3],
+    [1,3,4,5,7],
+    [0,3,4,6,8],
+    [0,3,4,5,6],
+    [3,4,7,1,5],
+    [4,6,7,0,8],
+    [4,6,7,2,8],
+    [4,6,7,8,1],
+    [1,7,6,8,4],
+    [4,7,8,6,1],
+    [1,7,8,4,6],
+    [0,2,4,6,8],
+    [0,2,4,1,8],
+    [0,2,4,1,6],
+    [2,4,8,0,6],
+    [2,4,8,5,6],
+    [2,4,8,0,5],
+    [0,4,6,2,8],
+    [0,4,6,3,8],
+    [0,4,6,2,3],
+]
 class Game{
     currentPlayer = "X"
     previousStarter = "O";
@@ -19,6 +66,7 @@ class Game{
     winningCombinationIndicatorClasses = [
         'winningCombination0', 'winningCombination1', 'winningCombination2', 'winningCombination3', 'winningCombination4', 'winningCombination5', 'winningCombination6', 'winningCombination7', 'playerOIndicator', 'playerXIndicator'
     ]
+    computerIsPlaying = false;
 
     start(){
         this.addEventListenerToBoxes();
@@ -228,7 +276,8 @@ class Game{
     handleClick(el = false){
         if(el?.textContent || this.gameEnded){
             return;
-        }else if(this.currentPlayer === "X" || this.level === "two players"){
+        }
+        else if(this.currentPlayer === "X" || this.level === "two players"){
             el.textContent = this.currentPlayer;
             if(el.textContent === "O"){
                 el.classList.add("text-light2")
@@ -240,7 +289,9 @@ class Game{
             this.removeCountdown()
         }
         if(this.level !== "two players" && this.currentPlayer === "O"){
-            this.computer()
+            if(!this.computerIsPlaying){
+                this.computer()
+            }
         }
     }
     addEventListenerToBoxes() {
@@ -250,6 +301,7 @@ class Game{
     }
 
     computer(){
+        this.computerIsPlaying = true;
         setTimeout(() => {
             if(this.level === "beginner"){
                 this.beginner()
@@ -262,6 +314,7 @@ class Game{
             this.checkForDraw()
             this.switchCurrentPlayer()
             this.setActiveTab()
+            this.computerIsPlaying = false;
         }, 500);
     }
     beginner(){
@@ -286,6 +339,9 @@ class Game{
         }
         if(!playedTurn.value){
             this.playTo("defend", playedTurn)
+        }
+        if(!playedTurn.value){
+            this.playTo("attack", playedTurn)
         }
         if(!playedTurn.value){
             this.playRandomBox();
@@ -356,6 +412,9 @@ class Game{
             this.playTo("defend", playedTurn)
         }
         if(!playedTurn.value){
+            this.playTo("attack", playedTurn)
+        }
+        if(!playedTurn.value){
             this.playRandomBox();
         }
     }
@@ -366,7 +425,32 @@ class Game{
         this.allBoxes[randomCellPosition].classList.add("text-light2");
     }
     playTo(goal, playedTurn) {
-        if (this.playerAboutToWin().player === (goal === "win" ? "O" : "X")) {
+        if(goal === "attack"){
+            console.log("checking for possibility of two-way-combo");
+            for (let i = 0; i < twoWaySystemCombinations.length; i++) {
+                let combo = twoWaySystemCombinations[i];
+                if(!this.allBoxes[combo[3]].textContent && !this.allBoxes[combo[4]].textContent){
+                    //console.log(`box ${combo[3]} and box ${combo[4]} are free`)
+                    let firstThreePositions = combo.slice(0, 3);
+                    let emptyPositions = [];
+                    let positionsOccupiedByComputer = []
+                    firstThreePositions.forEach( (position, index ) =>{
+                        if(!this.allBoxes[position].textContent){
+                            emptyPositions.push(position)
+                        }else if(this.allBoxes[position].textContent === "O"){
+                            positionsOccupiedByComputer.push(position)
+                        }
+                    })
+                    if(emptyPositions.length === 1 && positionsOccupiedByComputer.length === 2){
+                        console.log("created a two-way-system")
+                        this.allBoxes[emptyPositions[0]].textContent = "O";
+                        this.allBoxes[emptyPositions[0]].classList.add("text-light2");
+                        playedTurn.value = true;
+                        break;
+                    }
+                }                
+            }
+        }else if (this.playerAboutToWin().player === (goal === "win" ? "O" : "X")) {
             this.winningCombinations[this.playerAboutToWin().index].forEach(position => {
                 if (!this.allBoxes[position].textContent) {
                     this.allBoxes[position].textContent = "O"
